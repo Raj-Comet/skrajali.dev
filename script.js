@@ -446,17 +446,207 @@
 })();
 
 /* ═══════════════════════════════════════════════════════════
-   HERO BADGE "OPEN" PULSE — ensure cursor interaction tracked
+   SCROLL PROGRESS BAR
 ═══════════════════════════════════════════════════════════ */
-(function dynamicHoverTargets() {
-  const ring = document.getElementById('cursor-ring');
-  if (!ring) return;
-
-  document.addEventListener('mouseover', e => {
-    if (e.target.closest('a, button, .skill-pill, .tech-badge, .project-card, .contact-card, .social-link, input, textarea')) {
-      ring.classList.add('hovered');
-    } else {
-      ring.classList.remove('hovered');
+(function initScrollProgress() {
+  const bar = document.getElementById('scroll-progress');
+  if (!bar) return;
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollTop  = document.documentElement.scrollTop;
+        const docHeight  = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        bar.style.width  = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
+        ticking = false;
+      });
+      ticking = true;
     }
+  }, { passive: true });
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATED COUNTERS
+═══════════════════════════════════════════════════════════ */
+(function initCounters() {
+  const counters = document.querySelectorAll('[data-count]');
+  if (!counters.length) return;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el     = entry.target;
+      const target = parseFloat(el.dataset.count);
+      const dur    = 1400;
+      const start  = performance.now();
+
+      function step(now) {
+        const p = Math.min((now - start) / dur, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.floor(target * e) + '+';
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = target + '+';
+      }
+      requestAnimationFrame(step);
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+
+  counters.forEach(c => observer.observe(c));
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   GLITCH EFFECT — fires every 9 seconds on hero heading
+═══════════════════════════════════════════════════════════ */
+(function initGlitch() {
+  const heading = document.querySelector('.hero-heading');
+  if (!heading) return;
+  setInterval(() => {
+    heading.classList.add('glitch');
+    setTimeout(() => heading.classList.remove('glitch'), 450);
+  }, 9000);
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   RADAR CHART — Canvas spider chart
+═══════════════════════════════════════════════════════════ */
+(function initRadarChart() {
+  const canvas = document.getElementById('radar-chart');
+  if (!canvas) return;
+
+  const dpr   = window.devicePixelRatio || 1;
+  const SIZE  = 320;
+  canvas.width  = SIZE * dpr;
+  canvas.height = SIZE * dpr;
+  canvas.style.width  = SIZE + 'px';
+  canvas.style.height = SIZE + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const LABELS  = ['Auto', 'API', 'JS', 'Git', 'TS', 'Docker'];
+  const TARGETS = [90, 89, 85, 83, 80, 72];
+  const N = LABELS.length;
+  const CX = SIZE / 2, CY = SIZE / 2;
+  const R  = SIZE / 2 - 52;
+  const STEP = (Math.PI * 2) / N;
+
+  function point(i, pct) {
+    const angle = i * STEP - Math.PI / 2;
+    const r = pct / 100 * R;
+    return { x: CX + r * Math.cos(angle), y: CY + r * Math.sin(angle) };
+  }
+
+  function draw(vals) {
+    ctx.clearRect(0, 0, SIZE, SIZE);
+
+    /* Grid rings */
+    for (let ring = 1; ring <= 5; ring++) {
+      ctx.beginPath();
+      for (let i = 0; i <= N; i++) {
+        const angle = i * STEP - Math.PI / 2;
+        const rx = CX + (R * ring / 5) * Math.cos(angle);
+        const ry = CY + (R * ring / 5) * Math.sin(angle);
+        i === 0 ? ctx.moveTo(rx, ry) : ctx.lineTo(rx, ry);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(108,99,255,${0.06 + ring * 0.04})`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+
+    /* Axes */
+    for (let i = 0; i < N; i++) {
+      const angle = i * STEP - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(CX, CY);
+      ctx.lineTo(CX + R * Math.cos(angle), CY + R * Math.sin(angle));
+      ctx.strokeStyle = 'rgba(108,99,255,0.18)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    /* Data polygon */
+    ctx.beginPath();
+    for (let i = 0; i <= N; i++) {
+      const { x, y } = point(i % N, vals[i % N]);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+
+    const grad = ctx.createLinearGradient(CX - R, CY - R, CX + R, CY + R);
+    grad.addColorStop(0, 'rgba(108,99,255,0.38)');
+    grad.addColorStop(1, 'rgba(0,212,255,0.38)');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.strokeStyle = '#6c63ff';
+    ctx.lineWidth = 2.2;
+    ctx.stroke();
+
+    /* Vertex dots */
+    for (let i = 0; i < N; i++) {
+      const { x, y } = point(i, vals[i]);
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#00d4ff';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,212,255,0.3)';
+      ctx.lineWidth = 7;
+      ctx.stroke();
+    }
+
+    /* Labels */
+    ctx.font = `bold 11px 'JetBrains Mono', monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(240,240,245,0.88)';
+    for (let i = 0; i < N; i++) {
+      const angle = i * STEP - Math.PI / 2;
+      const lr = R + 28;
+      ctx.fillText(LABELS[i], CX + lr * Math.cos(angle), CY + lr * Math.sin(angle));
+    }
+  }
+
+  /* Animate into view */
+  let drawn = false;
+  draw([0, 0, 0, 0, 0, 0]);
+
+  const observer = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting || drawn) return;
+    drawn = true;
+    const dur = 1300;
+    const t0  = performance.now();
+    function step(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      draw(TARGETS.map(v => v * e));
+      if (p < 1) requestAnimationFrame(step);
+      else draw(TARGETS);
+    }
+    requestAnimationFrame(step);
+    observer.disconnect();
+  }, { threshold: 0.3 });
+  observer.observe(canvas);
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   3D TILT — project cards follow mouse
+═══════════════════════════════════════════════════════════ */
+(function initTilt() {
+  if (window.innerWidth < 1024) return;
+
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      card.style.setProperty('--tilt-rx', `${(-y * 10).toFixed(2)}deg`);
+      card.style.setProperty('--tilt-ry', `${(x * 10).toFixed(2)}deg`);
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.setProperty('--tilt-rx', '0deg');
+      card.style.setProperty('--tilt-ry', '0deg');
+    });
   });
 })();
