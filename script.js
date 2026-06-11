@@ -14,16 +14,26 @@
 })();
 
 /* ═══════════════════════════════════════════════════════════
-   CUSTOM CURSOR
+   CUSTOM CURSOR — diamond dot · spinning ring · trail
 ═══════════════════════════════════════════════════════════ */
 (function initCursor() {
   const dot  = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
   if (!dot || !ring) return;
 
+  const TRAIL_COUNT = 10;
+  const trails = [];
+
+  /* Build trail DOM elements */
+  for (let i = 0; i < TRAIL_COUNT; i++) {
+    const t = document.createElement('div');
+    t.className = 'cursor-trail';
+    document.body.appendChild(t);
+    trails.push({ el: t, x: 0, y: 0 });
+  }
+
   let mouseX = 0, mouseY = 0;
   let ringX  = 0, ringY  = 0;
-  let raf;
 
   document.addEventListener('mousemove', e => {
     mouseX = e.clientX;
@@ -32,19 +42,38 @@
     dot.style.top  = mouseY + 'px';
   });
 
-  function animateRing() {
-    ringX += (mouseX - ringX) * 0.14;
-    ringY += (mouseY - ringY) * 0.14;
+  function animateAll() {
+    /* Ring — smooth lag */
+    ringX += (mouseX - ringX) * 0.13;
+    ringY += (mouseY - ringY) * 0.13;
     ring.style.left = ringX + 'px';
     ring.style.top  = ringY + 'px';
-    raf = requestAnimationFrame(animateRing);
-  }
-  animateRing();
 
-  const hoverTargets = 'a, button, .skill-pill, .tech-badge, .project-card, .contact-card, .social-link, input, textarea';
-  document.querySelectorAll(hoverTargets).forEach(el => {
-    el.addEventListener('mouseenter', () => ring.classList.add('hovered'));
-    el.addEventListener('mouseleave', () => ring.classList.remove('hovered'));
+    /* Trail — each follows the one before it */
+    let px = mouseX, py = mouseY;
+    trails.forEach((trail, i) => {
+      const speed = 0.28 - i * 0.018;
+      trail.x += (px - trail.x) * Math.max(speed, 0.06);
+      trail.y += (py - trail.y) * Math.max(speed, 0.06);
+      trail.el.style.left    = trail.x + 'px';
+      trail.el.style.top     = trail.y + 'px';
+      trail.el.style.opacity = ((1 - i / TRAIL_COUNT) * 0.38).toFixed(3);
+      const s = 1 - i * 0.07;
+      trail.el.style.transform = `translate(-50%,-50%) rotate(45deg) scale(${Math.max(s, 0.2)})`;
+      px = trail.x;
+      py = trail.y;
+    });
+
+    requestAnimationFrame(animateAll);
+  }
+  animateAll();
+
+  /* Hover detection via delegation */
+  const HOVER_SEL = 'a, button, .skill-pill, .tech-badge, .project-card, .contact-card, .social-link, input, textarea, .edu-stat-badge, .stat-card';
+  document.addEventListener('mouseover', e => {
+    const isHover = !!e.target.closest(HOVER_SEL);
+    ring.classList.toggle('hovered', isHover);
+    dot.classList.toggle('hovered', isHover);
   });
 })();
 
