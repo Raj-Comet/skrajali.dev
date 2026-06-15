@@ -201,6 +201,130 @@
 })();
 
 /* ═══════════════════════════════════════════════════════════
+   LIVE TECH BACKDROP + NEWS PULSE
+═══════════════════════════════════════════════════════════ */
+(function initLiveTechPulse() {
+  const video = document.getElementById('tech-bg-video');
+  const headline = document.getElementById('tech-news-link');
+  const source = document.getElementById('tech-news-source');
+  const status = document.getElementById('tech-news-status');
+  const time = document.getElementById('tech-news-time');
+
+  const royaltyFreeVideos = [
+    {
+      src: 'https://videos.pexels.com/video-files/3209828/3209828-uhd_2560_1440_25fps.mp4',
+      provider: 'Pexels royalty-free video'
+    },
+    {
+      src: 'https://videos.pexels.com/video-files/3255275/3255275-uhd_2560_1440_25fps.mp4',
+      provider: 'Pexels royalty-free video'
+    },
+    {
+      src: 'https://videos.pexels.com/video-files/6913276/6913276-uhd_3840_2160_25fps.mp4',
+      provider: 'Pexels royalty-free video'
+    }
+  ];
+  const VIDEO_PLAYBACK_RATE = 1.35;
+  const VIDEO_ROTATE_MS = 45000;
+
+  const fallbackNews = [
+    {
+      title: 'AI, cloud, security, and developer tools are moving fast. Live feed is warming up.',
+      url: 'https://news.ycombinator.com/',
+      source: 'Tech Pulse'
+    },
+    {
+      title: 'Tracking fresh engineering stories, startup launches, and software releases.',
+      url: 'https://news.ycombinator.com/newest',
+      source: 'Tech Pulse'
+    },
+    {
+      title: 'Background broadcast mode active. Headlines update automatically when online.',
+      url: 'https://news.ycombinator.com/',
+      source: 'Tech Pulse'
+    }
+  ];
+
+  let videoIndex = 0;
+  let newsIndex = 0;
+  let stories = fallbackNews;
+
+  function setVideo() {
+    if (!video) return;
+    const clip = royaltyFreeVideos[videoIndex % royaltyFreeVideos.length];
+    video.src = clip.src;
+    video.load();
+    video.playbackRate = VIDEO_PLAYBACK_RATE;
+    video.play().catch(() => {
+      video.removeAttribute('src');
+      if (status) status.textContent = 'Video blocked · live headlines still active';
+    });
+    video.addEventListener('loadedmetadata', () => {
+      video.playbackRate = VIDEO_PLAYBACK_RATE;
+    }, { once: true });
+    video.addEventListener('loadeddata', () => {
+      if (status) status.textContent = clip.provider + ' · 1.35x background · headlines refresh every 5 minutes';
+    }, { once: true });
+    videoIndex++;
+  }
+
+  function formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function showStory() {
+    if (!headline || !source || !status || !time) return;
+    const story = stories[newsIndex % stories.length];
+    headline.classList.add('is-changing');
+
+    setTimeout(() => {
+      headline.textContent = story.title;
+      headline.href = story.url;
+      source.textContent = story.source || 'Hacker News';
+      const now = new Date();
+      time.textContent = formatTime(now);
+      time.setAttribute('datetime', now.toISOString());
+      headline.classList.remove('is-changing');
+      newsIndex++;
+    }, 220);
+  }
+
+  async function fetchTechNews() {
+    if (!headline) return;
+    try {
+      const res = await fetch('https://hn.algolia.com/api/v1/search_by_date?tags=story&query=technology', { cache: 'no-store' });
+      if (!res.ok) throw new Error('News request failed');
+      const data = await res.json();
+      const freshStories = (data.hits || [])
+        .filter(item => item.title && (item.url || item.story_url))
+        .slice(0, 8)
+        .map(item => ({
+          title: item.title,
+          url: item.url || item.story_url,
+          source: 'Hacker News'
+        }));
+
+      if (freshStories.length) {
+        stories = freshStories;
+        newsIndex = 0;
+        status.textContent = 'Live feed refreshed';
+      }
+    } catch (error) {
+      stories = fallbackNews;
+      status.textContent = 'Offline fallback active';
+    }
+    showStory();
+  }
+
+  setVideo();
+  showStory();
+  fetchTechNews();
+  setInterval(setVideo, VIDEO_ROTATE_MS);
+  setInterval(showStory, 9000);
+  setInterval(fetchTechNews, 300000);
+})();
+
+/* ═══════════════════════════════════════════════════════════
    HERO CANVAS — PARTICLE FIELD
 ═══════════════════════════════════════════════════════════ */
 (function initCanvas() {

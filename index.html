@@ -16,6 +16,12 @@
 </head>
 <body>
 
+  <!-- ═══════════════════════════ GLOBAL TECH VIDEO BACKGROUND ═════════════ -->
+  <div class="tech-video-bg" aria-hidden="true">
+    <video id="tech-bg-video" class="tech-bg-video" autoplay muted loop playsinline preload="metadata"></video>
+    <div class="tech-video-scan"></div>
+  </div>
+
   <!-- ═══════════════════════════ LOADING SCREEN ═══════════════════════════ -->
   <div id="loading-screen" aria-hidden="true">
     <div class="loader-content">
@@ -141,6 +147,21 @@
           <span class="tech-badge">Docker</span>
           <span class="tech-badge">API Testing</span>
         </div>
+
+        <aside class="live-tech-feed reveal-up" aria-label="Live technology news updates">
+          <div class="live-feed-topline">
+            <span class="live-pulse" aria-hidden="true"></span>
+            <span>Live Tech Pulse</span>
+            <time id="tech-news-time" datetime="">Updating now</time>
+          </div>
+          <a href="https://news.ycombinator.com/" target="_blank" rel="noopener noreferrer" id="tech-news-link" class="live-feed-headline">
+            Connecting to the latest technology updates...
+          </a>
+          <div class="live-feed-meta">
+            <span id="tech-news-source">Hacker News</span>
+            <span id="tech-news-status">3 Pexels videos · 1.35x background · headlines refresh every 5 minutes</span>
+          </div>
+        </aside>
       </div>
 
       <div class="scroll-indicator" aria-label="Scroll down">
@@ -795,6 +816,9 @@
       <div class="footer-inner">
         <p class="footer-copy">
           Built with ❤️ by <span class="gradient-text">Sk Raj Ali</span> · © 2026
+        </p>
+        <p class="footer-disclosure">
+          Background video via Pexels. News headlines link to original sources.
         </p>
         <span class="footer-brand gradient-text">rajcomet.dev</span>
         <div class="footer-socials" role="list" aria-label="Footer social links">
