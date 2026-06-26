@@ -774,3 +774,299 @@
     });
   });
 })();
+
+/* ═══════════════════════════════════════════════════════════
+   AI CHATBOT — local profile assistant
+═══════════════════════════════════════════════════════════ */
+(function initAiChatbot() {
+  const chatbot = document.getElementById('ai-chatbot');
+  const toggle = document.getElementById('ai-chatbot-toggle');
+  const panel = document.getElementById('ai-chatbot-panel');
+  const close = document.getElementById('ai-chatbot-close');
+  const form = document.getElementById('ai-chatbot-form');
+  const input = document.getElementById('ai-chatbot-input');
+  const messages = document.getElementById('ai-chatbot-messages');
+  const promptButtons = document.querySelectorAll('.ai-chatbot-prompts button');
+  if (!chatbot || !toggle || !panel || !close || !form || !input || !messages) return;
+
+  const profile = {
+    name: 'Sk Raj Ali',
+    title: 'Software Engineer and Senior SDET / Automation Engineer',
+    company: 'Genesis Advertising',
+    location: 'Kolkata, India',
+    education: 'Bachelor of Technology at National Institute of Technology, Durgapur, batch of 2026',
+    availability: 'Open to full-time roles, remote opportunities, relocation, and collaborations',
+    email: 'skrajali062003@gmail.com',
+    phone: '+91-9635637725',
+    linkedin: 'https://www.linkedin.com/in/sk-raj-ali',
+    github: 'https://github.com/Raj-Comet',
+    cv: 'assets/cv.pdf',
+    skills: [
+      'Test Automation', 'API Validation', 'Postman / API Testing', 'Selenium WebDriver',
+      'Playwright', 'JavaScript', 'TypeScript', 'Python', 'CI/CD Pipelines', 'Docker',
+      'Git / GitHub', 'REST APIs', 'Node.js', 'Express.js', 'Pytest', 'Jest',
+      'Mocha / Chai', 'Linux / Unix', 'JIRA', 'Agile / Scrum'
+    ],
+    projects: [
+      'API Test Automation Framework covering authentication flows, contract testing, regression suites, and CI/CD quality gates.',
+      'CI/CD Quality Pipeline with multi-stage quality gates, Docker containerization, environment parity checks, and rollback mechanisms.',
+      'Full-Stack Quality Dashboard for test coverage, API health metrics, and deployment readiness signals.'
+    ]
+  };
+
+  const knowledgeBase = [
+    {
+      topic: 'profile',
+      keywords: ['profile', 'summary', 'about', 'intro', 'introduce', 'who', 'overview', 'raj', 'sk raj ali'],
+      answer: `${profile.name} is a ${profile.title} at ${profile.company}, based in ${profile.location}. He studies B.Tech at NIT Durgapur, batch of 2026, and focuses on software quality, automation, API validation, CI/CD, Docker, backend services, and full-stack work.`
+    },
+    {
+      topic: 'experience',
+      keywords: ['experience', 'work', 'job', 'company', 'genesis', 'role', 'current', 'professional', 'responsibility', 'responsibilities'],
+      answer: `${profile.name} currently works at ${profile.company} in ${profile.location} as a ${profile.title}. His work focuses on strengthening software quality, test automation, API reliability, defect prevention, CI/CD pipelines, Docker containerization, and collaboration with development, product, and DevOps teams.`
+    },
+    {
+      topic: 'skills',
+      keywords: ['skill', 'skills', 'tech', 'stack', 'tools', 'technology', 'technologies', 'language', 'languages', 'framework', 'frameworks'],
+      answer: `${profile.name}'s strongest areas are test automation, API validation, SDET practices, CI/CD quality gates, and release readiness. His tools include ${profile.skills.slice(0, 16).join(', ')}.`
+    },
+    {
+      topic: 'testing and quality',
+      keywords: ['testing', 'qa', 'quality', 'sdet', 'automation', 'regression', 'system', 'e2e', 'manual', 'smoke', 'bug', 'defect', 'test plan', 'test planning'],
+      answer: `${profile.name} has a quality-engineering profile across test automation, API validation, regression testing, system testing, E2E testing, smoke testing, bug tracking, defect prevention, and release readiness. His approach is quality-first across the full SDLC.`
+    },
+    {
+      topic: 'api testing',
+      keywords: ['api', 'apis', 'rest', 'postman', 'contract', 'authentication', 'endpoint', 'validation', 'request', 'response'],
+      answer: `${profile.name} has strong API-quality experience with REST APIs, Postman, API validation, authentication-flow testing, contract testing, regression suites, and CI/CD quality gates. One featured project is an API Test Automation Framework for reliable release checks.`
+    },
+    {
+      topic: 'frontend and backend',
+      keywords: ['frontend', 'backend', 'fullstack', 'full-stack', 'node', 'nodejs', 'node.js', 'express', 'express.js', 'javascript', 'typescript', 'html', 'css', 'web'],
+      answer: `${profile.name} is not limited to testing. He works with JavaScript, TypeScript, HTML/CSS, Node.js, Express.js, REST APIs, backend services, and full-stack applications, with quality and reliability built into the workflow.`
+    },
+    {
+      topic: 'automation tools',
+      keywords: ['selenium', 'playwright', 'webdriver', 'pytest', 'jest', 'mocha', 'chai', 'framework', 'automation framework'],
+      answer: `${profile.name} works with automation tools and frameworks including Selenium WebDriver, Playwright, Pytest, Jest, and Mocha/Chai. His automation focus covers UI checks, API validation, regression coverage, and repeatable release confidence.`
+    },
+    {
+      topic: 'devops',
+      keywords: ['devops', 'ci', 'cd', 'ci/cd', 'pipeline', 'pipelines', 'github actions', 'docker', 'container', 'containerization', 'linux', 'unix', 'bash', 'shell', 'release'],
+      answer: `${profile.name} has DevOps-adjacent experience with CI/CD pipelines, GitHub Actions, Docker, Linux/Unix, Bash/Shell, release engineering, environment checks, and quality gates. His CI/CD Quality Pipeline project focuses on reducing release risk.`
+    },
+    {
+      topic: 'projects',
+      keywords: ['project', 'projects', 'built', 'build', 'portfolio', 'github', 'work sample', 'dashboard', 'framework', 'pipeline'],
+      answer: `${profile.name}'s featured projects include: ${profile.projects.join(' ')} More work can be explored from his GitHub profile: ${profile.github}.`
+    },
+    {
+      topic: 'education',
+      keywords: ['education', 'college', 'university', 'nit', 'durgapur', 'degree', 'btech', 'b.tech', 'batch', 'study', 'coursework', 'jee'],
+      answer: `${profile.name} is pursuing ${profile.education}. His coursework includes Data Structures and Algorithms, Object-Oriented Programming, DBMS, Operating Systems, Computer Networks, Software Engineering, Web Technologies, and Discrete Mathematics.`
+    },
+    {
+      topic: 'availability',
+      keywords: ['available', 'availability', 'opportunity', 'opportunities', 'remote', 'relocation', 'fulltime', 'full-time', 'full time', 'collaboration', 'join', 'opening'],
+      answer: `${profile.name} is open to full-time roles, collaborations, remote opportunities, and relocation. His best-fit roles include software engineering, SDET, test automation, API quality, release engineering, and quality-focused backend or full-stack work.`
+    },
+    {
+      topic: 'resume',
+      keywords: ['resume', 'cv', 'download', 'pdf', 'document'],
+      answer: `Raj's resume is available on this website as a PDF. Use the "Download CV" button, or open ${profile.cv}. His profile focuses on software engineering, SDET work, automation, APIs, CI/CD, and quality engineering.`
+    },
+    {
+      topic: 'contact',
+      keywords: ['contact', 'email', 'phone', 'call', 'linkedin', 'github', 'reach', 'message'],
+      answer: `You can contact ${profile.name} by email at ${profile.email}, phone at ${profile.phone}, LinkedIn at ${profile.linkedin}, or GitHub at ${profile.github}. He is ${profile.availability.toLowerCase()}.`
+    },
+    {
+      topic: 'good fit',
+      keywords: ['strength', 'strong', 'best', 'why', 'fit', 'good fit', 'hire', 'recruiter', 'candidate', 'suitable'],
+      answer: `${profile.name} is a strong fit where teams need someone who treats quality as an engineering discipline, not a final checklist. He combines automation, API reliability, release readiness, Docker, CI/CD, and cross-functional collaboration with practical software engineering experience.`
+    }
+  ];
+
+  const aliases = {
+    js: 'javascript',
+    ts: 'typescript',
+    nodejs: 'node',
+    expressjs: 'express',
+    cicd: 'ci/cd',
+    qa: 'quality',
+    sdet: 'automation',
+    dbms: 'database',
+    os: 'operating systems',
+    nitdgp: 'nit durgapur'
+  };
+
+  const stopWords = new Set([
+    'a', 'an', 'and', 'any', 'are', 'about', 'as', 'at', 'be', 'can', 'do', 'does',
+    'for', 'from', 'have', 'has', 'he', 'his', 'how', 'i', 'in', 'is', 'it', 'me',
+    'of', 'on', 'or', 'raj', 'sk', 'tell', 'that', 'the', 'there', 'this', 'to',
+    'what', 'where', 'which', 'with', 'you'
+  ]);
+
+  function setOpen(open) {
+    chatbot.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close AI chatbot' : 'Open AI chatbot');
+    panel.setAttribute('aria-hidden', String(!open));
+    if (open) setTimeout(() => input.focus(), 120);
+  }
+
+  function appendMessage(text, type) {
+    const message = document.createElement('div');
+    message.className = 'ai-message ' + type;
+    message.textContent = text;
+    messages.appendChild(message);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function buildAnswer(question) {
+    const normalizedQuestion = normalizeText(question);
+    const queryTokens = tokenize(normalizedQuestion);
+    const directSkillMatches = findSkillMatches(normalizedQuestion, queryTokens);
+    const rankedTopics = knowledgeBase
+      .map(item => ({ ...item, score: scoreTopic(item, normalizedQuestion, queryTokens) }))
+      .sort((a, b) => b.score - a.score);
+
+    const bestTopic = rankedTopics[0];
+    const secondTopic = rankedTopics[1];
+
+    if (directSkillMatches.length) {
+      const topic = bestTopic && bestTopic.score > 0 ? bestTopic : knowledgeBase.find(item => item.topic === 'skills');
+      return `Related to ${directSkillMatches.join(', ')}: ${topic.answer}`;
+    }
+
+    if (bestTopic && bestTopic.score >= 2) {
+      if (secondTopic && secondTopic.score >= 2 && secondTopic.topic !== bestTopic.topic) {
+        return `${bestTopic.answer} Also relevant: ${secondTopic.answer}`;
+      }
+      return bestTopic.answer;
+    }
+
+    return `I can help with Raj's experience, skills, tools, education, projects, availability, resume, or contact details. Try a specific word like Docker, Playwright, API, Postman, NIT, Genesis, CI/CD, Python, or Selenium.`;
+  }
+
+  function normalizeText(text) {
+    return text
+      .toLowerCase()
+      .replace(/c\s*i\s*\/?\s*c\s*d/g, 'ci/cd')
+      .replace(/node\.js/g, 'node')
+      .replace(/express\.js/g, 'express')
+      .replace(/b\.tech/g, 'btech')
+      .replace(/[^a-z0-9/+.#\s-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function tokenize(text) {
+    return text
+      .split(/[\s,/+-]+/)
+      .map(token => aliases[token] || token)
+      .filter(token => token.length > 1 && !stopWords.has(token));
+  }
+
+  function scoreTopic(item, normalizedQuestion, queryTokens) {
+    const keywordText = normalizeText(item.keywords.join(' ') + ' ' + item.topic);
+    const keywordTokens = new Set(tokenize(keywordText));
+    let score = 0;
+
+    item.keywords.forEach(keyword => {
+      const normalizedKeyword = normalizeText(keyword);
+      if (normalizedKeyword && normalizedQuestion.includes(normalizedKeyword)) score += 4;
+    });
+
+    queryTokens.forEach(token => {
+      if (keywordTokens.has(token)) score += 2;
+      else if (isCloseToken(token, keywordTokens)) score += 1;
+    });
+
+    return score;
+  }
+
+  function findSkillMatches(normalizedQuestion, queryTokens) {
+    const tokenSet = new Set(queryTokens);
+    return profile.skills.filter(skill => {
+      const normalizedSkill = normalizeText(skill);
+      const skillTokens = tokenize(normalizedSkill);
+      return normalizedQuestion.includes(normalizedSkill) || skillTokens.some(token => tokenSet.has(token));
+    }).slice(0, 4);
+  }
+
+  function isCloseToken(token, keywordTokens) {
+    for (const keyword of keywordTokens) {
+      if (keyword.length < 4 || token.length < 4) continue;
+      if (keyword.startsWith(token) || token.startsWith(keyword)) return true;
+      if (levenshteinDistance(token, keyword) <= 1) return true;
+    }
+    return false;
+  }
+
+  function levenshteinDistance(a, b) {
+    const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+    for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+    for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        dp[i][j] = Math.min(
+          dp[i - 1][j] + 1,
+          dp[i][j - 1] + 1,
+          dp[i - 1][j - 1] + cost
+        );
+      }
+    }
+    return dp[a.length][b.length];
+  }
+
+  function showTyping() {
+    const typing = document.createElement('div');
+    typing.className = 'ai-message bot ai-typing';
+    typing.setAttribute('aria-label', 'Raj AI is typing');
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    messages.appendChild(typing);
+    messages.scrollTop = messages.scrollHeight;
+    return typing;
+  }
+
+  function sendQuestion(question) {
+    const cleanQuestion = question.trim();
+    if (!cleanQuestion) return;
+    appendMessage(cleanQuestion, 'user');
+    input.value = '';
+    const typing = showTyping();
+
+    setTimeout(() => {
+      typing.remove();
+      appendMessage(buildAnswer(cleanQuestion), 'bot');
+    }, 420);
+  }
+
+  toggle.addEventListener('click', () => {
+    setOpen(!chatbot.classList.contains('open'));
+  });
+
+  close.addEventListener('click', () => setOpen(false));
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    sendQuestion(input.value);
+  });
+
+  promptButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const question = button.dataset.question || button.textContent;
+      setOpen(true);
+      sendQuestion(question);
+    });
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && chatbot.classList.contains('open')) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+})();

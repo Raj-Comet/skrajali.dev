@@ -8,7 +8,7 @@
   <meta property="og:title" content="Sk Raj Ali · Software Engineer & SDET" />
   <meta property="og:description" content="Building quality into every layer of the engineering lifecycle." />
   <meta property="og:type" content="website" />
-  <title>Sk Raj Ali · Software Engineer & SDET</title>
+  <title>Sk Raj Ali · Software Engineer </title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -108,9 +108,8 @@
         </div>
 
         <p class="hero-bio reveal-up">
-          Software Engineer &amp; SDET @ Genesis · NIT Durgapur '26<br />
-          Building quality into every layer of the engineering lifecycle —
-          from API validation to release readiness.
+          Software Engineer @ Genesis · NIT Durgapur '26<br />
+          Building quality into every layer of the engineering lifecycle from API validation to release readiness.
         </p>
 
         <div class="hero-ctas reveal-up">
@@ -838,6 +837,55 @@
       </button>
     </div>
   </footer>
+
+  <!-- ═══════════════════════════ AI CHATBOT ═══════════════════════════════ -->
+  <aside class="ai-chatbot" id="ai-chatbot" aria-label="AI chatbot about Sk Raj Ali">
+    <button class="ai-chatbot-toggle" id="ai-chatbot-toggle" type="button" aria-label="Open AI chatbot" aria-expanded="false" aria-controls="ai-chatbot-panel">
+      <img src="assets/chatbot-avatar.png" alt="" class="ai-chatbot-avatar" width="76" height="76" />
+      <span class="ai-chatbot-label">Ask AI</span>
+    </button>
+
+    <section class="ai-chatbot-panel" id="ai-chatbot-panel" aria-hidden="true">
+      <header class="ai-chatbot-header">
+        <div class="ai-chatbot-title-row">
+          <img src="assets/chatbot-avatar.png" alt="" class="ai-chatbot-mini-avatar" width="44" height="44" />
+          <div>
+            <h2 class="ai-chatbot-title">Raj AI Assistant</h2>
+            <p class="ai-chatbot-status">Ask about Raj's profile</p>
+          </div>
+        </div>
+        <button class="ai-chatbot-close" id="ai-chatbot-close" type="button" aria-label="Close AI chatbot">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </header>
+
+      <div class="ai-chatbot-messages" id="ai-chatbot-messages" aria-live="polite">
+        <div class="ai-message bot">
+          Hi, I am Raj AI. Ask me about Sk Raj Ali's experience, skills, education, projects, availability, or contact details.
+        </div>
+      </div>
+
+      <div class="ai-chatbot-prompts" aria-label="Suggested questions">
+        <button type="button" data-question="Summarize Raj's profile">Profile</button>
+        <button type="button" data-question="Tell me about Raj's experience">Experience</button>
+        <button type="button" data-question="What are Raj's strongest skills?">Skills</button>
+        <button type="button" data-question="What projects has Raj built?">Projects</button>
+        <button type="button" data-question="Tell me about Raj's education">Education</button>
+        <button type="button" data-question="Is Raj available for opportunities?">Availability</button>
+        <button type="button" data-question="Why is Raj a good fit?">Good Fit</button>
+        <button type="button" data-question="Where can I download Raj's resume?">Resume</button>
+        <button type="button" data-question="How can I contact Raj?">Contact</button>
+      </div>
+
+      <form class="ai-chatbot-form" id="ai-chatbot-form" autocomplete="off">
+        <label class="sr-only" for="ai-chatbot-input">Ask about Sk Raj Ali</label>
+        <input id="ai-chatbot-input" type="text" placeholder="Ask about Raj..." aria-label="Ask about Sk Raj Ali" />
+        <button type="submit" aria-label="Send question">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        </button>
+      </form>
+    </section>
+  </aside>
 
   <script src="script.js"></script>
 </body>
